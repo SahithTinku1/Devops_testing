@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-k8s-demo
+  labels:
+    app: flask-k8s-demo
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: flask-k8s-demo
+  template:
+    metadata:
+      labels:
+        app: flask-k8s-demo
+    spec:
+      containers:
+        - name: flask-k8s-demo
+          image: your-dockerhub-username/flask-k8s-demo:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5000
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 5000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 5000
+            initialDelaySeconds: 10
+            periodSeconds: 20
+      restartPolicy: Always
